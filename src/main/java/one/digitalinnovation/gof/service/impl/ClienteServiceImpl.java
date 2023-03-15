@@ -2,13 +2,10 @@ package one.digitalinnovation.gof.service.impl;
 
 import java.util.Optional;
 
+import one.digitalinnovation.gof.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import one.digitalinnovation.gof.model.Cliente;
-import one.digitalinnovation.gof.model.ClienteRepository;
-import one.digitalinnovation.gof.model.Endereco;
-import one.digitalinnovation.gof.model.EnderecoRepository;
 import one.digitalinnovation.gof.service.ClienteService;
 import one.digitalinnovation.gof.service.ViaCepService;
 
@@ -28,6 +25,10 @@ public class ClienteServiceImpl implements ClienteService {
 	@Autowired
 	private EnderecoRepository enderecoRepository;
 	@Autowired
+	private CompraRepository compraRepository;
+	@Autowired
+	private AtendimentoRepository atendimentoRepository;
+	@Autowired
 	private ViaCepService viaCepService;
 	
 	// Strategy: Implementar os métodos definidos na interface.
@@ -43,7 +44,15 @@ public class ClienteServiceImpl implements ClienteService {
 	public Cliente buscarPorId(Long id) {
 		// Buscar Cliente por ID.
 		Optional<Cliente> cliente = clienteRepository.findById(id);
-		return cliente.get();
+		Boolean existeCliente = cliente.isPresent();
+
+		Cliente result = null;
+
+		if (Boolean.TRUE.equals(existeCliente)) {
+			result = cliente.get();
+		}
+
+		return result;
 	}
 
 	@Override
@@ -58,12 +67,27 @@ public class ClienteServiceImpl implements ClienteService {
 		if (clienteBd.isPresent()) {
 			salvarClienteComCep(cliente);
 		}
+		//TODO - tratar o else, quando o cliente não estiver presente
 	}
 
 	@Override
 	public void deletar(Long id) {
 		// Deletar Cliente por ID.
 		clienteRepository.deleteById(id);
+
+		//TODO tratar caso o id não esteja presente
+	}
+
+	@Override
+	public Iterable<Compra> buscarComprasUsandoIdCliente(Long idCliente) {
+		//TODO
+		return null;
+	}
+
+	@Override
+	public Iterable<Atendimento> buscarAtendimentosUsandoIdCliente(Long idCliente) {
+		//TODO
+		return null;
 	}
 
 	private void salvarClienteComCep(Cliente cliente) {
@@ -75,6 +99,7 @@ public class ClienteServiceImpl implements ClienteService {
 			enderecoRepository.save(novoEndereco);
 			return novoEndereco;
 		});
+
 		cliente.setEndereco(endereco);
 		// Inserir Cliente, vinculando o Endereco (novo ou existente).
 		clienteRepository.save(cliente);

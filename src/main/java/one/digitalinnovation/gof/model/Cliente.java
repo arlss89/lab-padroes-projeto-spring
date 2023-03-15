@@ -16,6 +16,12 @@ public class Cliente {
 	@ManyToOne
 	private Endereco endereco;
 
+	@ManyToOne
+	private Compra compra;
+
+	@ManyToOne
+	private Atendimento atendimento;
+
 	public Long getId() {
 		return id;
 	}
@@ -34,6 +40,22 @@ public class Cliente {
 
 	public Endereco getEndereco() {
 		return endereco;
+	}
+
+	public Compra getCompra() {
+		return compra;
+	}
+
+	public void setCompra(Compra compra) {
+		this.compra = compra;
+	}
+
+	public Atendimento getAtendimento() {
+		return atendimento;
+	}
+
+	public void setAtendimento(Atendimento atendimento) {
+		this.atendimento = atendimento;
 	}
 
 	public void setEndereco(Endereco endereco) {

@@ -1,6 +1,8 @@
 package one.digitalinnovation.gof.service;
 
+import one.digitalinnovation.gof.model.Atendimento;
 import one.digitalinnovation.gof.model.Cliente;
+import one.digitalinnovation.gof.model.Compra;
 
 /**
  * Interface que define o padrão <b>Strategy</b> no domínio de cliente. Com
@@ -20,5 +22,9 @@ public interface ClienteService {
 	void atualizar(Long id, Cliente cliente);
 
 	void deletar(Long id);
+
+	Iterable<Compra> buscarComprasUsandoIdCliente(Long id);
+
+	Iterable<Atendimento> buscarAtendimentosUsandoIdCliente(Long id);
 
 }
