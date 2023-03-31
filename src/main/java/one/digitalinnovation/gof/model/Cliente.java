@@ -1,26 +1,18 @@
 package one.digitalinnovation.gof.model;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
+import jakarta.persistence.*;
+
 
 @Entity
+@Table(name = "cliente")
 public class Cliente {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Column(name = "id")
 	private Long id;
+	@Column(name = "nome")
 	private String nome;
-	@ManyToOne
-	private Endereco endereco;
-
-	@ManyToOne
-	private Compra compra;
-
-	@ManyToOne
-	private Atendimento atendimento;
 
 	public Long getId() {
 		return id;
@@ -36,30 +28,6 @@ public class Cliente {
 
 	public void setNome(String nome) {
 		this.nome = nome;
-	}
-
-	public Endereco getEndereco() {
-		return endereco;
-	}
-
-	public Compra getCompra() {
-		return compra;
-	}
-
-	public void setCompra(Compra compra) {
-		this.compra = compra;
-	}
-
-	public Atendimento getAtendimento() {
-		return atendimento;
-	}
-
-	public void setAtendimento(Atendimento atendimento) {
-		this.atendimento = atendimento;
-	}
-
-	public void setEndereco(Endereco endereco) {
-		this.endereco = endereco;
 	}
 
 }

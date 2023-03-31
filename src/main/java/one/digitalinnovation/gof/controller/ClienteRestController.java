@@ -1,7 +1,11 @@
 package one.digitalinnovation.gof.controller;
 
+import one.digitalinnovation.gof.utils.AppMessages;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,6 +29,11 @@ import one.digitalinnovation.gof.service.ClienteService;
 @RequestMapping("clientes")
 public class ClienteRestController {
 
+	public static final Logger logger = LoggerFactory.getLogger(ClienteRestController.class);
+
+	@Autowired
+	KafkaTemplate<String, String> kafkaTemplate;
+
 	@Autowired
 	private ClienteService clienteService;
 
@@ -35,12 +44,16 @@ public class ClienteRestController {
 
 	@GetMapping("/{id}")
 	public ResponseEntity<Cliente> buscarPorId(@PathVariable Long id) {
-		return ResponseEntity.ok(clienteService.buscarPorId(id));
+		Cliente cliente = clienteService.buscarPorId(id);
+		return ResponseEntity.ok(cliente);
 	}
 
 	@PostMapping
 	public ResponseEntity<Cliente> inserir(@RequestBody Cliente cliente) {
 		clienteService.inserir(cliente);
+
+		// Envia a mensagem para o Kafka
+		kafkaTemplate.send("clientes", AppMessages.sendedToKafka(cliente.getNome()));
 		return ResponseEntity.ok(cliente);
 	}
 

@@ -3,11 +3,13 @@ package one.digitalinnovation.gof.service.impl;
 import java.util.Optional;
 
 import one.digitalinnovation.gof.model.*;
+import one.digitalinnovation.gof.utils.AppMessages;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import one.digitalinnovation.gof.service.ClienteService;
-import one.digitalinnovation.gof.service.ViaCepService;
 
 /**
  * Implementação da <b>Strategy</b> {@link ClienteService}, a qual pode ser
@@ -19,17 +21,11 @@ import one.digitalinnovation.gof.service.ViaCepService;
 @Service
 public class ClienteServiceImpl implements ClienteService {
 
+	public static final Logger logger = LoggerFactory.getLogger(ClienteServiceImpl.class);
+
 	// Singleton: Injetar os componentes do Spring com @Autowired.
 	@Autowired
 	private ClienteRepository clienteRepository;
-	@Autowired
-	private EnderecoRepository enderecoRepository;
-	@Autowired
-	private CompraRepository compraRepository;
-	@Autowired
-	private AtendimentoRepository atendimentoRepository;
-	@Autowired
-	private ViaCepService viaCepService;
 	
 	// Strategy: Implementar os métodos definidos na interface.
 	// Facade: Abstrair integrações com subsistemas, provendo uma interface simples.
@@ -57,7 +53,12 @@ public class ClienteServiceImpl implements ClienteService {
 
 	@Override
 	public void inserir(Cliente cliente) {
-		salvarClienteComCep(cliente);
+		try {
+			clienteRepository.save(cliente);
+			logger.info(AppMessages.clienteInsertedSuccess(cliente.getNome()));
+		} catch (Exception e) {
+			logger.error(AppMessages.anErrorHasOcurred(e));
+		}
 	}
 
 	@Override
@@ -65,44 +66,20 @@ public class ClienteServiceImpl implements ClienteService {
 		// Buscar Cliente por ID, caso exista:
 		Optional<Cliente> clienteBd = clienteRepository.findById(id);
 		if (clienteBd.isPresent()) {
-			salvarClienteComCep(cliente);
+			clienteRepository.save(cliente);
+		} else {
+			logger.info(AppMessages.objectNotFoud(cliente.getNome()));
 		}
-		//TODO - tratar o else, quando o cliente não estiver presente
 	}
 
 	@Override
 	public void deletar(Long id) {
 		// Deletar Cliente por ID.
-		clienteRepository.deleteById(id);
-
-		//TODO tratar caso o id não esteja presente
-	}
-
-	@Override
-	public Iterable<Compra> buscarComprasUsandoIdCliente(Long idCliente) {
-		//TODO
-		return null;
-	}
-
-	@Override
-	public Iterable<Atendimento> buscarAtendimentosUsandoIdCliente(Long idCliente) {
-		//TODO
-		return null;
-	}
-
-	private void salvarClienteComCep(Cliente cliente) {
-		// Verificar se o Endereco do Cliente já existe (pelo CEP).
-		String cep = cliente.getEndereco().getCep();
-		Endereco endereco = enderecoRepository.findById(cep).orElseGet(() -> {
-			// Caso não exista, integrar com o ViaCEP e persistir o retorno.
-			Endereco novoEndereco = viaCepService.consultarCep(cep);
-			enderecoRepository.save(novoEndereco);
-			return novoEndereco;
-		});
-
-		cliente.setEndereco(endereco);
-		// Inserir Cliente, vinculando o Endereco (novo ou existente).
-		clienteRepository.save(cliente);
+		try {
+			clienteRepository.deleteById(id);
+		} catch (Exception e) {
+			logger.error(AppMessages.anErrorHasOcurred(e));
+		}
 	}
 
 }

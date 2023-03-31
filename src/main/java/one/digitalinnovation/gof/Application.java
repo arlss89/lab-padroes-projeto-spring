@@ -3,6 +3,7 @@ package one.digitalinnovation.gof;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.openfeign.EnableFeignClients;
+import org.springframework.context.annotation.ComponentScan;
 
 /**
  * Projeto Spring Boot gerado via Spring Initializr.
@@ -16,6 +17,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
  */
 @EnableFeignClients
 @SpringBootApplication
+@ComponentScan(basePackages = {"one.digitalinnovation.gof"})
 public class Application {
 
 	public static void main(String[] args) {
